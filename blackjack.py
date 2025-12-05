@@ -103,19 +103,50 @@ def main():
     #draw two cards
     player=[deck.pop(), deck.pop()]
     dealer=[deck.pop(), deck.pop()]
-   # print(player)
-   # print(dealer)
+
 
     total=calculate_hand_values(player)
-   # print(f"\n player Hand value:{total}")
+
     print()
     total = calculate_hand_values(dealer)
-    #print(f"\n dealer Hand value:{total}")
+
 
     print("\nDEALER' SHOW CARD :")
     print(f"{dealer[0][1]} of {dealer[0][0]}\n ")
 
     print_hand("YOUR CARDS :",player)
+
+
+
+    # player turn
+    while True:
+        player_action= input("\nHit or Stand? ").lower()
+        if player_action == "hit":
+            player.append(deck.pop())
+            print_hand("\nYOUR CARDS :",player)
+            if calculate_hand_values(player) >21:
+                break
+        elif player_action == "stand":
+            break
+        else:
+            print("Invalid option .Type 'hit' or 'stand'")
+    player_total=calculate_hand_values(player)
+
+
+
+
+    #dealer turn
+    print("\nDEALER'S CARDS:")
+    print_hand("",dealer)
+
+    while calculate_hand_values(dealer) < 17:
+        dealer.append(deck.pop())
+
+    dealer_total=calculate_hand_values(dealer)
+    print(f"\nPLAYER TOTAL : {player_total}")
+    print(f"\nDEALER Total:{dealer_total}\n")
+
+
 
 
 
