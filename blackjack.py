@@ -31,6 +31,11 @@ def calculate_hand_values(hand):
 
     return total
 
+def print_hand( title,hand):
+    print(title)
+
+    for card in hand:
+        print(f"{card[1]} of {card[0]}")
 
 
 
@@ -93,19 +98,24 @@ def main():
            print("enter a valid numeric bet:")"""
 
     deck = create_deck()
-    print(deck)
+    #print(deck)
 
     #draw two cards
     player=[deck.pop(), deck.pop()]
     dealer=[deck.pop(), deck.pop()]
-    print(player)
-    print(dealer)
+   # print(player)
+   # print(dealer)
 
     total=calculate_hand_values(player)
-    print(f"\n player Hand value:{total}")
+   # print(f"\n player Hand value:{total}")
     print()
     total = calculate_hand_values(dealer)
-    print(f"\n dealer Hand value:{total}")
+    #print(f"\n dealer Hand value:{total}")
+
+    print("\nDEALER' SHOW CARD :")
+    print(f"{dealer[0][1]} of {dealer[0][0]}\n ")
+
+    print_hand("YOUR CARDS :",player)
 
 
 
