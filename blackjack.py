@@ -1,5 +1,4 @@
 import random
-
 from db import read_money,write_money
 # card creation using list of lists
 suits=["Hearts","Diamonds","Clubs","Spades"]
@@ -40,7 +39,7 @@ def print_hand( title,hand):
 
 
 #
-"""def buy_money(money):
+def buy_money(money):
     # ask user if they want to buy more money to play the game
     print(f"your money is below the minimum bet ($5) .")
     choice=input("Do you want to buy  more money? (y/n)")
@@ -54,108 +53,119 @@ def print_hand( title,hand):
                 return money + amount
             except ValueError:
                 print("enter a valid number :")
-    return money"""
-
-
-
-
-
-
+    return money
 
 
 
 def main():
+    # read data from file
+    money = read_money()
+
     #display title
-    print(" BlackJACK!")
+    print("\nBlackJACK!")
     print("Blackjack payout is 3:2")
 
-    #read data from file
-    #  money=read_money()
-    #money=3
-    """  while True:
+
+
+    while True:
         print(f"\nMoney:  {money}")
+
+
         #handle  insufficient funds
         if money < 5:
             money=buy_money(money)
-        print(f"\nMoney:  {money}")
-        if money < 5:
-            print("Sorry, you don't have enough money  to continue. Good buy :")
-            break
+            write_money(money)
+            if money < 5:
+               print("Sorry, you don't have enough money  to continue. Good buy :")
+               break
 
-     # handle insufficient funds
-     while True:
-       try:
-            bet=float(input("Bet amount (5-1000): "))
-            if bet <= 5:
-                print("minimum bet is 5.")
-            elif bet > 1000:
-                print("maximum bet is 1000 .")
-            elif bet > money:
-                print("you cannot bet more than you have")
+        # handle bet amount
+        while True:
+           try:
+                bet=float(input("Bet amount (5-1000): "))
+                if bet <= 5:
+                    print("minimum bet is 5.")
+                elif bet > 1000:
+                    print("maximum bet is 1000 .")
+                elif bet > money:
+                    print("you cannot bet more than you have")
+                else:
+                    break
+           except ValueError:
+               print("enter a valid numeric bet:")
+
+
+        deck = create_deck()
+        #draw two cards
+        player=[deck.pop(), deck.pop()]
+        dealer=[deck.pop(), deck.pop()]
+
+
+        total=calculate_hand_values(player)
+
+        print()
+        total = calculate_hand_values(dealer)
+
+
+        print("\nDEALER' SHOW CARD :")
+        print(f"{dealer[0][1]} of {dealer[0][0]}\n ")
+
+        print_hand("YOUR CARDS :",player)
+
+
+
+        # player turn
+        while True:
+            player_action= input("\nHit or Stand? (hit/stand) : ").lower()
+            if player_action == "hit":
+                player.append(deck.pop())
+                print_hand("\nYOUR CARDS :",player)
+                if calculate_hand_values(player) >21:
+                    break
+            elif player_action == "stand":
+                break
             else:
-                break
-       except ValueError:
-           print("enter a valid numeric bet:")"""
-
-    deck = create_deck()
-    #print(deck)
-
-    #draw two cards
-    player=[deck.pop(), deck.pop()]
-    dealer=[deck.pop(), deck.pop()]
+                print("Invalid option .Type 'hit' or 'stand'")
+        player_total=calculate_hand_values(player)
 
 
-    total=calculate_hand_values(player)
+        #dealer turn
+        print("\nDEALER'S CARDS:")
+        print_hand("",dealer)
 
-    print()
-    total = calculate_hand_values(dealer)
+        while calculate_hand_values(dealer) < 17:
+            dealer.append(deck.pop())
 
+        dealer_total=calculate_hand_values(dealer)
+        print(f"\nPLAYER TOTAL : {player_total}")
+        print(f"\nDEALER Total:{dealer_total}\n")
 
-    print("\nDEALER' SHOW CARD :")
-    print(f"{dealer[0][1]} of {dealer[0][0]}\n ")
-
-    print_hand("YOUR CARDS :",player)
-
-
-
-    # player turn
-    while True:
-        player_action= input("\nHit or Stand? ").lower()
-        if player_action == "hit":
-            player.append(deck.pop())
-            print_hand("\nYOUR CARDS :",player)
-            if calculate_hand_values(player) >21:
-                break
-        elif player_action == "stand":
-            break
+        # find the winner
+        if player_total > 21:
+            print("\nSorry you .lose:")
+            money -= bet
+        elif dealer_total > 21 or player_total > dealer_total:
+           if len(player) ==2 and player_total==21:
+               winnings = round(bet*1.5,2)
+               print(f"\n Blackjack   You win { winnings}!")
+               money+=winnings
+           else:
+               print(f"You win!.")
+               money += bet
+        elif dealer_total>player_total:
+            print("\nDealer wins!:")
+            money -= bet
         else:
-            print("Invalid option .Type 'hit' or 'stand'")
-    player_total=calculate_hand_values(player)
+            print("\n It's a (tie).")
 
+        write_money(money)
+        print(f" Money : {money}\n")
 
-
-
-    #dealer turn
-    print("\nDEALER'S CARDS:")
-    print_hand("",dealer)
-
-    while calculate_hand_values(dealer) < 17:
-        dealer.append(deck.pop())
-
-    dealer_total=calculate_hand_values(dealer)
-    print(f"\nPLAYER TOTAL : {player_total}")
-    print(f"\nDEALER Total:{dealer_total}\n")
-
-
-
-
-
-
-
-
-
-
-
+        #play again
+        again = input("\n play again? (y/n)").lower()
+        if again != "y":
+            print("\nCome back soon.")
+            break
 
 
 if __name__ == '__main__':
