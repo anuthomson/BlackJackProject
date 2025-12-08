@@ -1,12 +1,26 @@
 import random
 from db import read_money,write_money
-# card creation using list of lists
+
+
+
+# card data and deck creation
+#-----------------------------------------------
+
+
+# Suits and ranks used for a standard deck
 suits=["Hearts","Diamonds","Clubs","Spades"]
 ranks= ["2","3","4","5","6","7","8","9","10","Jack","Queen","King","Ace"]
+
+#Card values match the same index as ranks
 values = [2,3,4,5,6,7,8,9,10,10,10,10,11]
 
+
+
 def create_deck():
-    # create and return shuffled  52 -card deck
+    """
+      Creates a standard 52-card deck represented as a list of
+      [suit, rank, value] lists. The deck is shuffled before returning.
+      """
     deck=[]
     for suit in suits:
         for i,rank in enumerate(ranks):
@@ -16,13 +30,19 @@ def create_deck():
     random.shuffle(deck)
     return deck
 
+
+
+
 def calculate_hand_values(hand):
-    # return  value of a hand
+    """
+       Calculates the total value of a hand.
+       Automatically adjusts Aces from 11 → 1 if total > 21.
+       """
     total=sum(card[2] for card in hand)
 
     ace= sum(1 for card in hand if card[1] =="Ace")
 
-
+    # Convert Ace from value 11 → 1 when necessary
     while total >21 and ace>0:
         total-=10
         ace-=1
@@ -30,15 +50,19 @@ def calculate_hand_values(hand):
 
     return total
 
-def print_hand( title,hand):
-    print(title)
 
+
+def print_hand( title,hand):
+    """Displays the cards in a hand with a title label."""
+    print(title)
     for card in hand:
         print(f"{card[1]} of {card[0]}")
+    print()
 
 
 
-#
+# MONEY MANAGEMENT AND BUY-IN SYSTEM
+#-------------------------------------------------------------
 def buy_money(money):
     # ask user if they want to buy more money to play the game
     print(f"your money is below the minimum bet ($5) .")
@@ -57,6 +81,8 @@ def buy_money(money):
 
 
 
+# MAIN BLACKJACK GAME LOOP
+#--------------------------------------------------------------
 def main():
     # read data from file
     money = read_money()
@@ -72,6 +98,7 @@ def main():
 
 
         #handle  insufficient funds
+        #-----------------------------------------------------------
         if money < 5:
             money=buy_money(money)
             write_money(money)
@@ -79,7 +106,8 @@ def main():
                print("Sorry, you don't have enough money  to continue. Good buy :")
                break
 
-        # handle bet amount
+        # handle bet amount with validation
+        #-------------------------------------------------------------
         while True:
            try:
                 bet=float(input("Bet amount (5-1000): "))
@@ -94,7 +122,8 @@ def main():
            except ValueError:
                print("enter a valid numeric bet:")
 
-
+        #  create and deal cards
+        #-------------------------------------------------------
         deck = create_deck()
         #draw two cards
         player=[deck.pop(), deck.pop()]
@@ -115,6 +144,7 @@ def main():
 
 
         # player turn
+        #-------------------------------------------------------
         while True:
             player_action= input("\nHit or Stand? (hit/stand) : ").lower()
             if player_action == "hit":
@@ -129,7 +159,8 @@ def main():
         player_total=calculate_hand_values(player)
 
 
-        #dealer turn
+        #dealer turn:Dealer must hit until 17+
+        #--------------------------------------------------------
         print("\nDEALER'S CARDS:")
         print_hand("",dealer)
 
@@ -140,7 +171,8 @@ def main():
         print(f"\nPLAYER TOTAL : {player_total}")
         print(f"\nDEALER Total:{dealer_total}\n")
 
-        # find the winner
+        # Determine Outcome
+        #--------------------------------------------------------
         if player_total > 21:
             print("\nSorry you .lose:")
             money -= bet
@@ -161,12 +193,13 @@ def main():
         write_money(money)
         print(f" Money : {money}\n")
 
-        #play again
+        # Ask player if they want to continue
+        #-----------------------------------------------------------
         again = input("\n play again? (y/n)").lower()
         if again != "y":
             print("\nCome back soon.")
             break
 
-
+# Entry point
 if __name__ == '__main__':
     main()
